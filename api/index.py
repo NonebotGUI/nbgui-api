@@ -8,15 +8,15 @@ import re
 
 def get_list():
     json_list = []
-    for id, file_name in enumerate(sorted(os.listdir('./broadcast'))):
+    for id, file_name in enumerate(sorted(os.listdir('data'))):
         if file_name.endswith('.md'):
-            path = os.path.join('./broadcast', file_name)
+            path = os.path.join('data', file_name)
             time = datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
             json_list.append({"name": file_name, "time": time, "id": id})
     return json_list
 
 def get_md(name):
-    with open(f'./broadcast/{name}', 'r', encoding='utf-8') as file:
+    with open(f'data/{name}', 'r', encoding='utf-8') as file:
         markdown_content = file.read()
 
     content = json.dumps(markdown_content, ensure_ascii=False)
