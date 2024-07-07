@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import os
 import json
 from datetime import datetime
-import re,requests
+import re
 
 
 
@@ -35,26 +35,6 @@ def proxy_plugins():
         return {"code":1002,"message":f"请求失败！Code:{response.status_code}"}
 
 
-def proxy_adapters():
-    url = 'https://registry.nonebot.dev/adapters.json'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        return {"code":1002,"message":f"请求失败！Code:{response.status_code}"}
-
-
-def proxy_drivers():
-    url = 'https://registry.nonebot.dev/drivers.json'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        return {"code":1002,"message":f"请求失败！Code:{response.status_code}"}
 
 
 #API主体
@@ -99,27 +79,5 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(res.encode('utf-8'))
 
-        #代理NoneBot的插件商店
-        elif self.path == "/nbgui/proxy/plugins":
-            res = json.dumps(proxy_plugins(), ensure_ascii=False, indent=4)
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(res.encode('utf-8'))
 
-        #代理NoneBot的适配器商店
-        elif self.path == "/nbgui/proxy/adapters":
-            res = json.dumps(proxy_adapters(), ensure_ascii=False, indent=4)
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(res.encode('utf-8'))
-
-        #代理NoneBot的驱动器商店
-        elif self.path == "/nbgui/proxy/drivers":
-            res = json.dumps(proxy_drivers(), ensure_ascii=False, indent=4)
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(res.encode('utf-8'))
 
