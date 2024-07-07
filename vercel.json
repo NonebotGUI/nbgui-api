@@ -3,7 +3,7 @@
     "builds": [
       {
         "src": "api/index.py",
-        "use": "@vercel-python",
+        "use": "@python",
         "config": { "distDir": "api" }
       }
     ],
