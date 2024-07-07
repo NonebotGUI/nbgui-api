@@ -24,16 +24,6 @@ def get_md(name):
     return content
 
 
-def proxy_plugins():
-    url = 'https://registry.nonebot.dev/plugins.json'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        return {"code":1002,"message":f"请求失败！Code:{response.status_code}"}
-
 
 
 
