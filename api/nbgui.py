@@ -40,7 +40,7 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(res.encode('utf-8'))
 
         #获取对应id的公告
-        elif re.match(r'^/nbgui/broadcast/(\d+)$', self.path):
+        elif re.match(r'^/broadcast/(\d+)$', self.path):
             match = re.match(r'^/nbgui/broadcast/(\d+)$', self.path)
             if match:
                 broadcast_id = match.group(1)
@@ -61,7 +61,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_error(404, '')
 
         #获取公告列表
-        elif self.path == "/nbgui/broadcast/list":
+        elif self.path == "/broadcast/list":
             json_list = get_list()
             res = json.dumps(json_list, ensure_ascii=False, indent=4)
             self.send_response(200)
