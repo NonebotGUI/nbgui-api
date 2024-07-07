@@ -29,7 +29,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/plain; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(b'{"code":200,"message":"Welcome to NoneBot GUI API!Deployed by Vercel"}')
+                self.wfile.write(b'{"code":200,"message":"Welcome to NoneBot GUI API! Deployed by Vercel"}')
 
             elif re.match(r'^/nbgui/broadcast/(\d+)$', self.path):
                 match = re.match(r'^/nbgui/broadcast/(\d+)$', self.path)
@@ -64,5 +64,11 @@ class handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(res.encode('utf-8'))
                 
+        except FileNotFoundError as e:
+            self.send_error(404, f"File not found: {str(e)}")
         except Exception as e:
             self.send_error(500, f"Internal Server Error: {str(e)}")
+        finally:
+            # 确保在处理完请求后关闭连接
+            self.close_connection = True
+
