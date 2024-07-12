@@ -1,9 +1,17 @@
-from http.server import BaseHTTPRequestHandler
+from flask import Flask
+import os
+import json
+from datetime import datetime
+import re
 
-class handler(BaseHTTPRequestHandler):
 
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-Type', 'application/json; charset=utf-8')
-        self.end_headers()
-        self.wfile.write('{"code":200,"message":"Welcome to NoneBot GUI API! Deployed by Vercel"}'.encode('utf-8'))
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return {"code":200,"message":"Welcome to NoneBot GUI API! Deployed by Vercel"}
+
+
+@app.route('/test')
+def hello_flask():
+    return {"code":200,"message":"Hello Flask"}
