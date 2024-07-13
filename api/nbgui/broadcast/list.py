@@ -1,17 +1,18 @@
 from http.server import BaseHTTPRequestHandler
 import os
 import json
-from datetime import datetime
+from frontmatter import Frontmatter
+
 
 def get_list():
-    #从文件中拿id
-    with open('data/加入我们的QQ群聊.md', 'r', encoding='utf-8') as file:
-        lines_id = file.readlines()[:2]
-        lines_time = file.readlines()[:3]
-        id = int(lines_id[1].replace('id: ','').strip())
-        time = str(lines_time[2].replace('time: ','').strip())
-    return {"name": 'file_name', "time": time, "id": id}
-
+    json_list = []
+    for id, file_name in enumerate(sorted(os.listdir('data'))):
+        if file_name.endswith('.md'):
+            path = os.path.join('data', file_name)
+            md = Frontmatter.read_file(path)
+            time = md['attributes']['time']
+            json_list.append({"name": file_name, "time": time, "id": id})
+    return json.dumps(json_list, ensure_ascii=False, indent=4)
 
 
 class handler(BaseHTTPRequestHandler):
