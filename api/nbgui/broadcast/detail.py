@@ -46,7 +46,8 @@ def get_detail(id):
             res_raw = {"status": 1001, "error":"Only allow int ID!"}
             res = json.dumps(res_raw,ensure_ascii=False)
     else:
-        res_raw = {"status":1000, "error":"ID is required!"}
+        res_raw = {"status":1000, "error":"ID is required!",
+        "id":id}
         res = json.dumps(res_raw,ensure_ascii=False)
     return res
 
