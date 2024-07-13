@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import os
 import json
+from urllib.parse import urlparse, parse_qs
 
 
 def get_list():
@@ -34,11 +35,13 @@ def get_md(name):
 class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
-        id_str = self.path.split('?')[1].split('=')[1] if '?' in self.path else ''
-        id = int(id_str) if id_str else None
+        url_parts = urlparse(self.path)
+        query_params = parse_qs(url_parts.query)
+        id = query_params.get('id', [None])[0]
         if id is not None:
             try:
                 md_list = json.loads(get_list())
+                id = int(id)
                 name = next((item['name'] for item in md_list if item['id'] == id), None)
                 if name:
                     res_raw = {"content":get_md(name)}
@@ -56,7 +59,7 @@ class handler(BaseHTTPRequestHandler):
                     self.wfile.write(res.encode('utf-8'))
 
             except TypeError:
-                res_raw = {"status": 1001, "error":"String is not allowed!"}
+                res_raw = {"status": 1001, "error":"Only allow int ID!"}
                 res = json.dumps(res_raw,ensure_ascii=False)
                 self.send_response(1001)
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
