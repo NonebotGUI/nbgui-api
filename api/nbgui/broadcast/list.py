@@ -4,18 +4,14 @@ import json
 from datetime import datetime
 
 def get_list():
-    json_list = []
-    for file_name in enumerate(sorted(os.listdir('data'),reverse=True)):
-        if file_name.endswith('.md'):
-            path = os.path.join('data', file_name)
-            #从文件中拿id
-            with open('data/加入我们的QQ群聊.md', 'r', encoding='utf-8') as file:
-                lines_id = file.readlines()[:2]
-                lines_time = file.readlines()[:3]
-                id = int(lines_id[1].replace('id: ','').strip())
-                time = str(lines_time[2].replace('time: ','').strip())
-            json_list.append({"name": file_name, "time": time, "id": id})
-    return json_list
+    #从文件中拿id
+    with open('data/加入我们的QQ群聊.md', 'r', encoding='utf-8') as file:
+        lines_id = file.readlines()[:2]
+        lines_time = file.readlines()[:3]
+        id = int(lines_id[1].replace('id: ','').strip())
+        time = str(lines_time[2].replace('time: ','').strip())
+    return {"name": 'file_name', "time": time, "id": id}
+
 
 
 class handler(BaseHTTPRequestHandler):
