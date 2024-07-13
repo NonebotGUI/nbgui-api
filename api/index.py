@@ -1,51 +1,52 @@
-from flask import Flask,request
-import os
-import json
-from frontmatter import Frontmatter
+from flask import Flask , request
+import requests , json , random
+
+
+app = Flask(__name__)
+def select(a):
+    dict ={'Anime':'a','Comic':'b','Game':'c','Literature':'d','Original':'e','Internet':'f','Other':'g','Video':'h','Poem':'i','NCM':'j','Philosophy':'k','Funny':'l'}
+    if str(a) in dict.keys() :
+        return dict[str(a)]
+    else :
+        return dict[str(random.choice(list(dict.keys())))]
+
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 
-
-def get_list():
-    json_list = []
-    for id, file_name in enumerate(sorted(os.listdir('data'))):
-        if file_name.endswith('.md'):
-            path = os.path.join('data', file_name)
-            md = Frontmatter.read_file(path)
-            time = md['attributes']['time']
-            json_list.append({"name": file_name, "time": time, "id": id})
-    return json.dumps(json_list, ensure_ascii=False, indent=4)
-
-def get_md(name):
-    path = f'data/{name}'
-    if not os.path.exists(path):
-        return None
-    with open(path, 'r', encoding='utf-8') as file:
-        markdown_content = file.read()
-    return markdown_content
+@app.route('/search/',methods=["GET"])
+def search():
+    query = request.args.get("s")
+    key = 'hitokoto'
+    url = requests.get("https://api.pwxiao.top/sentences/i.json")
+    text = url.text
+    data = json.loads(text)
+        
+    matches = [item for item in data if key in item and query in item[key]]
+    matches = json.dumps(matches,ensure_ascii=False)
+    return matches
+    
 
 
-@app.route('/',methods=['GET'])
-def index():
-    return {"status":200,"message":"Welcome to NoneBot GUI API! Deployed by Vercel"}
+@app.route('/',methods=["GET"])
+def return_OneText():
 
-@app.route('/nbgui/broadcast',methods=['GET'])
-def list():
-    res = get_list()
-    return res
+    category = request.args.get("category")
 
-@app.route('/nbgui/broadcast/detail/<int:id>')
-def get_detail(id):
+    category =  select(category)
+    url = requests.get("https://api.pwxiao.top/sentences/" + category + ".json")
+    text = url.text
+    # with open("../sentences/"+category+".json",'r',encoding='utf-8') as f:
+    #      text = f.read()       
+
+    res = json.loads(text)
+
     try:
-        md_list = json.loads(get_list())
-        name = next((item['name'] for item in md_list if item['id'] == id), None)
+        number = random.randint(0,(len(res) - 1))
+    except:
+        number = 6
 
-        if name:
-            return {"content":get_md(name)}
-        else:
-            return {"status":1002, "message":f"ID {id} not found"}
-    except TypeError:
-        return {"status": 1001, "error":"String is not allowed!"}
-
-
+    result = res[number]
+    fina_res = json.dumps(result,ensure_ascii=False)
+ 
+    return fina_res
