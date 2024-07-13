@@ -43,8 +43,9 @@ def get_detail(id: int):
                 res = json.dumps(res_raw,ensure_ascii=False)
 
         except TypeError as e:
-            res_raw = {"status": 1001, "error":e,"id":id}
+            res_raw = {"status": 1001, "error":"Only allow int ID!","id":id}
             res = json.dumps(res_raw,ensure_ascii=False)
+            print (e)
     else:
         res_raw = {"status":1000, "error":"ID is required!"}
         res = json.dumps(res_raw,ensure_ascii=False)
