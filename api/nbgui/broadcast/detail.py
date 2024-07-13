@@ -38,31 +38,27 @@ def get_detail(id):
             if name:
                 res_raw = {"content":get_md(name)}
                 res = json.dumps(res_raw,indent=4)
-                status_code = 200
             else:
                 res_raw = {"status":1002, "error":f"ID {id} not found"}
                 res = json.dumps(res_raw,ensure_ascii=False)
-                status_code = 1002
 
         except TypeError:
             res_raw = {"status": 1001, "error":"Only allow int ID!"}
             res = json.dumps(res_raw,ensure_ascii=False)
-            status_code = 1001
     else:
         res_raw = {"status":1000, "error":"ID is required!"}
         res = json.dumps(res_raw,ensure_ascii=False)
-        status_code = 1000
-    return res,status_code
+    return res
 
 
 class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.end_headers()
         query = parse.urlparse(self.path).query
         query_components = parse.parse_qs(query)
         id = query_components.get('id', [None])[0]
-        res, status_code = get_detail(id)
-        self.send_response(status_code)
-        self.send_header('Content-Type', 'application/json; charset=utf-8')
-        self.end_headers()
+        res = get_detail(id)
         self.wfile.write(res.encode('utf-8'))
