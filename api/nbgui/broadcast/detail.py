@@ -14,7 +14,7 @@ def get_list():
                 lines_id = file.readlines()[:2]
                 lines_time = file.readlines()[:3]
                 id = int(lines_id[1].replace('id: ','').strip())
-                time = str(lines_time[2].replace('time: ','').strip())
+                time = str(lines_time[1].replace('time: ','').strip())
             json_list.append({"name": file_name, "time": time, "id": id})
     return json_list
 
@@ -56,7 +56,7 @@ class handler(BaseHTTPRequestHandler):
             except TypeError:
                 res_raw = {"status": 1001, "error":"String is not allowed!"}
                 res = json.dumps(res_raw,ensure_ascii=False)
-                self.send_response(200)
+                self.send_response(1001)
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
                 self.wfile.write(res.encode('utf-8'))
