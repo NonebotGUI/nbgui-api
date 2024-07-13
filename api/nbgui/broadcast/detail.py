@@ -27,9 +27,10 @@ def get_md(name):
     if not os.path.exists(path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        markdown_content = file.read()
-    markdown_content = repr(markdown_content)
-    return markdown_content
+        lines = file.readlines()[:5]
+        content = ''.join(lines[4:])
+        return content
+
 
 
 def get_detail(id):
