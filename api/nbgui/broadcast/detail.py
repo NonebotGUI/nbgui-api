@@ -6,13 +6,17 @@ from frontmatter import Frontmatter
 
 def get_list():
     json_list = []
-    for id, file_name in enumerate(sorted(os.listdir('data'))):
+    for file_name in enumerate(sorted(os.listdir('data'),reverse=True)):
         if file_name.endswith('.md'):
             path = os.path.join('data', file_name)
-            md = Frontmatter.read_file(path)
-            time = md['attributes']['time']
+            #从文件中拿id
+            with open(path, 'r', encoding='utf-8') as file:
+                lines_id = file.readlines()[:2]
+                lines_time = file.readlines()[:3]
+                id = int(lines_id[1].replace('id: ','').strip())
+                time = str(lines_time[2].replace('time: ','').strip())
             json_list.append({"name": file_name, "time": time, "id": id})
-    return json.dumps(json_list, ensure_ascii=False, indent=4)
+    return json_list
 
 def get_md(name):
     path = f'data/{name}'
@@ -44,10 +48,18 @@ class handler(BaseHTTPRequestHandler):
                 else:
                     res_raw = {"status":1002, "error":f"ID {id} not found"}
                     res = json.dumps(res_raw,ensure_ascii=False)
+                    self.send_response(1002)
+                    self.send_header('Content-Type', 'application/json; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(res.encode('utf-8'))
 
             except TypeError:
                 res_raw = {"status": 1001, "error":"String is not allowed!"}
                 res = json.dumps(res_raw,ensure_ascii=False)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(res.encode('utf-8'))
 
 
 
