@@ -1,20 +1,21 @@
 from http.server import BaseHTTPRequestHandler
 import os
 import json
-from datetime import datetime
 
 def get_list():
     json_list = []
-    for file_name in enumerate(sorted(os.listdir('data'),reverse=True)):
+    for id, file_name in enumerate(sorted(os.listdir('data'), reverse=True)):
         if file_name.endswith('.md'):
             path = os.path.join('data', file_name)
-            #从文件中拿id
+            # 从文件中拿id和时间
             with open(path, 'r', encoding='utf-8') as file:
-                lines_id = file.readlines()[:2]
-                lines_time = file.readlines()[:3]
-                id = int(lines_id[1].replace('id: ',''))
-                time = str(lines_time[1].replacestrip())
-            json_list.append({"name": file_name, "time": time, "id": id})
+                lines = file.readlines()[:3]
+                id_line = next((line for line in lines if line.startswith('id:')), None)
+                time_line = next((line for line in lines if line.startswith('time:')), None)
+                if id_line and time_line:
+                    id = int(id_line.replace('id: ', '').strip())
+                    time = time_line.replace('time: ', '').strip()
+                    json_list.append({"name": file_name, "time": time, "id": id})
     return json_list
 
 
