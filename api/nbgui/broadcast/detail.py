@@ -46,31 +46,25 @@ class handler(BaseHTTPRequestHandler):
                 if name:
                     res_raw = {"content":get_md(name)}
                     res = json.dumps(res_raw,indent=4)
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/json; charset=utf-8')
-                    self.end_headers()
-                    self.wfile.write(res.encode('utf-8'))
+                    status_code = 200
                 else:
                     res_raw = {"status":1002, "error":f"ID {id} not found"}
                     res = json.dumps(res_raw,ensure_ascii=False)
-                    self.send_response(1002)
-                    self.send_header('Content-Type', 'application/json; charset=utf-8')
-                    self.end_headers()
-                    self.wfile.write(res.encode('utf-8'))
+                    status_code = 1002
 
             except TypeError:
                 res_raw = {"status": 1001, "error":"Only allow int ID!"}
                 res = json.dumps(res_raw,ensure_ascii=False)
-                self.send_response(1001)
-                self.send_header('Content-Type', 'application/json; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(res.encode('utf-8'))
+                status_code = 1001
 
 
 
         else:
-            self.send_response(1000)
-            self.end_headers()
             res_raw = {"status":1000, "error":"ID is required!"}
             res = json.dumps(res_raw,ensure_ascii=False)
-            self.wfile.write(res.encode('utf-8'))
+            status_code = 1000
+
+        self.send_response(status_code)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(res.encode('utf-8'))
