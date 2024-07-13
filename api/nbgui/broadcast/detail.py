@@ -18,7 +18,8 @@ def get_list():
                     id = int(id_line.replace('id: ', '').strip())
                     time = time_line.replace('time: ', '').strip()
                     json_list.append({"name": file_name, "time": time, "id": id})
-    return json_list
+    return json.dumps(json_list, indent=4, ensure_ascii=False)
+
 
 
 def get_md(name):
@@ -29,7 +30,7 @@ def get_md(name):
         markdown_content = file.read()
     return markdown_content
 
-def get_detail(id: int):
+def get_detail(id):
     if id is not None:
         try:
             id = int(id)
@@ -43,7 +44,7 @@ def get_detail(id: int):
                 res = json.dumps(res_raw,ensure_ascii=False)
 
         except TypeError as e:
-            res_raw = {"status": 1001, "error":"Only allow int ID!","id":id}
+            res_raw = {"status": 1001, "error":"Only allow int ID!"}
             res = json.dumps(res_raw,ensure_ascii=False)
             print (e)
     else:
@@ -61,6 +62,5 @@ class handler(BaseHTTPRequestHandler):
         query = parse.urlparse(self.path).query
         query_components = parse.parse_qs(query)
         id = query_components.get('id', [None])[0]
-        id = int(id)
         res = get_detail(id)
         self.wfile.write(res.encode('utf-8'))
