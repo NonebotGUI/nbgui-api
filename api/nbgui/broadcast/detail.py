@@ -28,7 +28,9 @@ def get_md(name):
         return None
     with open(path, 'r', encoding='utf-8') as file:
         markdown_content = file.read()
+    markdown_content = repr(markdown_content)
     return markdown_content
+
 
 def get_detail(id):
     if id is not None:
@@ -37,19 +39,19 @@ def get_detail(id):
             md_list = json.loads(get_list())
             name = next((item['name'] for item in md_list if item['id'] == id), None)
             if name:
-                res_raw = {"content":get_md(name)}
-                res = json.dumps(res_raw,indent=4,ensure_ascii=True)
+                res_raw = {"content": get_md(name)}
+                res = json.dumps(res_raw, indent=4, ensure_ascii=False)
             else:
-                res_raw = {"status":1002, "error":f"ID {id} not found"}
-                res = json.dumps(res_raw,ensure_ascii=False)
+                res_raw = {"status": 1002, "error": f"ID {id} not found"}
+                res = json.dumps(res_raw, ensure_ascii=False)
 
         except TypeError as e:
-            res_raw = {"status": 1001, "error":"Only allow int ID!"}
-            res = json.dumps(res_raw,ensure_ascii=False)
-            print (e)
+            res_raw = {"status": 1001, "error": "Only allow int ID!"}
+            res = json.dumps(res_raw, ensure_ascii=False)
+            print(e)
     else:
-        res_raw = {"status":1000, "error":"ID is required!"}
-        res = json.dumps(res_raw,ensure_ascii=False)
+        res_raw = {"status": 1000, "error": "ID is required!"}
+        res = json.dumps(res_raw, ensure_ascii=False)
     return res
 
 
