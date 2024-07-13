@@ -10,7 +10,7 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         response = httpx.get('https://registry.nonebot.dev/plugins.json')
         res_raw = response.text
-        res = json.dumps(res_raw, ensure_ascii=False, indent=4)
+        res = json.dumps(str(res_raw), ensure_ascii=False, indent=4)
         self.wfile.write(res.encode('utf-8'))
 
 
