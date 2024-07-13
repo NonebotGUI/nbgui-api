@@ -9,7 +9,7 @@ def get_list():
         if file_name.endswith('.md'):
             path = os.path.join('data', file_name)
             #从文件中拿id
-            with open(path, 'r', encoding='utf-8') as file:
+            with open('data/加入我们的QQ群聊.md', 'r', encoding='utf-8') as file:
                 lines_id = file.readlines()[:2]
                 lines_time = file.readlines()[:3]
                 id = int(lines_id[1].replace('id: ','').strip())
