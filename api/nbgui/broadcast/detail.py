@@ -60,5 +60,6 @@ class handler(BaseHTTPRequestHandler):
         query = parse.urlparse(self.path).query
         query_components = parse.parse_qs(query)
         id = query_components.get('id', [None])[0]
-        res = get_detail(int(id))
+        id = int(id)
+        res = get_detail(id)
         self.wfile.write(res.encode('utf-8'))
