@@ -27,8 +27,8 @@ def get_md(name):
     if not os.path.exists(path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        lines = file.readlines()[:5]
-        content = ''.join(lines[4:])
+        md_content = file.readlines()[4:]
+        content = ''.join(md_content)
         return content
 
 
