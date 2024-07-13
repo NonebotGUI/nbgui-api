@@ -29,7 +29,7 @@ def get_md(name):
         markdown_content = file.read()
     return markdown_content
 
-def get_detail(id):
+def get_detail(id: int):
     if id is not None:
         try:
             md_list = json.loads(get_list())
@@ -37,7 +37,7 @@ def get_detail(id):
             name = next((item['name'] for item in md_list if item['id'] == id), None)
             if name:
                 res_raw = {"content":get_md(name)}
-                res = json.dumps(res_raw,indent=4)
+                res = json.dumps(res_raw,indent=4,ensure_ascii=True)
             else:
                 res_raw = {"status":1002, "error":f"ID {id} not found"}
                 res = json.dumps(res_raw,ensure_ascii=False)
