@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import os
 import json
 
+
 def get_list():
     json_list = []
     for id, file_name in enumerate(sorted(os.listdir('data'), reverse=True)):

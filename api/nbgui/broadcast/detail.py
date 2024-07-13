@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import os
 import json
-from urllib.parse import urlparse, parse_qs
+from urllib import parse
 
 
 def get_list():
@@ -58,9 +58,9 @@ def get_detail(id):
 class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
-        url_parts = urlparse(self.path)
-        query_params = parse_qs(url_parts.query)
-        id = query_params.get('id', [None])[0]
+        query = parse.urlparse(self.path).query
+        query_components = parse.parse_qs(query)
+        id = query_components.get('id', [None])[0]
         res, status_code = get_detail(id)
         self.send_response(status_code)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
