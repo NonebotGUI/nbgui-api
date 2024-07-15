@@ -53,4 +53,4 @@ class handler(BaseHTTPRequestHandler):
         id = query_components.get('id', [None])[0]
         res = get_detail(id)
         res = json.loads(res)
-        self.wfile.write(res.encode('utf-8'))
+        self.wfile.write(res)
