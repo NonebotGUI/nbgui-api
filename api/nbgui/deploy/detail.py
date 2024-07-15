@@ -10,7 +10,7 @@ def get_list():
         if file_name.endswith('.json'):
             path = os.path.join('api/nbgui/deploy/template', file_name)
             with open(path, 'r', encoding='utf-8') as file:
-                jsonData = json.loads(file)
+                jsonData = json.loads(file.read())
                 id = jsonData['id']
                 desc = jsonData['desc']
                 json_list.append({"name": file_name, "id": id, "desc": desc})
@@ -26,7 +26,7 @@ def get_detail(id):
             name = next((item['name'] for item in list if item['id'] == id), None)
             if name:
                 with open(f'api/nbgui/deploy/template/{name}', 'r', encoding='utf-8') as file:
-                    res_raw = json.loads(file)
+                    res_raw = json.loads(file.read())
                 res = json.dumps(res_raw, indent=4, ensure_ascii=False)
             else:
                 res_raw = {"status": 1002, "error": f"ID {id} not found"}

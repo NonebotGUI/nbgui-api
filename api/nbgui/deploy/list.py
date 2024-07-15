@@ -9,7 +9,7 @@ def get_list():
         if file_name.endswith('.json'):
             path = os.path.join('api/nbgui/deploy/template', file_name)
             with open(path, 'r', encoding='utf-8') as file:
-                jsonData = json.loads(file)
+                jsonData = json.loads(file.read())
                 id = jsonData['id']
                 desc = jsonData['desc']
                 json_list.append({"name": file_name, "id": id, "desc": desc})
