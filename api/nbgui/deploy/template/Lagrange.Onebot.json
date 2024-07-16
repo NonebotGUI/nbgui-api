@@ -1,0 +1,73 @@
+{
+    "name": "Lagrange.Onebot",
+    "id": 0,
+    "desc": "一个开源的 NTQQ 协议实现，系统兼容较好，适用于 nonebot.adapter.onebot.v11",
+    "cmd": "./Lagrange.OneBot",
+    "cmdWin": "./Lagrange.OneBot.exe",
+    "dl": [
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-arm64_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-arm_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm64_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-x64_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-arm64_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-x64_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_win-x64_8.0.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_win-x86_8.0.zip"
+    ],
+    "config":
+    {
+        "Logging": {
+          "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+          }
+        },
+        "SignServerUrl": "https://sign.lagrangecore.org/api/sign",
+        "MusicSignServerUrl": "",
+        "Account": {
+          "Uin": 0,
+          "Password": "",
+          "Protocol": "Linux",
+          "AutoReconnect": true,
+          "GetOptimumServer": true
+        },
+        "Message": {
+          "IgnoreSelf": true,
+          "StringPost": false
+        },
+        "QrCode": {
+          "ConsoleCompatibilityMode": false
+        },
+        "Implementations": [
+          {
+            "Type": "ReverseWebSocket",
+            "Host": "NBGUI.HOST",
+            "Port": "NBGUI.PORT",
+            "Suffix": "/onebot/v11/ws",
+            "ReconnectInterval": 5000,
+            "HeartBeatInterval": 5000,
+            "HeartBeatEnable": true,
+            "AccessToken": ""
+          },
+          {
+            "Type": "ForwardWebSocket",
+            "Host": "127.0.0.1",
+            "Port": 8081,
+            "HeartBeatInterval": 5000,
+            "HeartBeatEnable": true,
+            "AccessToken": ""
+          }
+        ]
+      },
+    "tip": "无法保证该版本为最新版本，此模板的最后更新时间为： 2024.07.15 17:25",
+    "adapter": "nonebot-adapter-onebot",
+    "drivers": [
+      "fastapi",
+      "httpx",
+      "websocket",
+      "aiohttp"
+    ]
+
+}

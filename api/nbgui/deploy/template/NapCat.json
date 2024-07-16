@@ -1,0 +1,53 @@
+{
+    "name": "NapCat",
+    "id": 1,
+    "desc": "基于 PC NTQQ 的 QQ Bot 协议端实现，使用前请先安装好 NTQQ，适用于 nonebot.adapter.onebot.v11",
+    "cmd": "./napcat.sh",
+    "cmdWin": "./napcat.ps1",
+    "dl": [
+        "https://github.com/NapNeko/NapCatQQ/releases/latest/download/NapCat.linux.arm64.zip",
+        "https://github.com/NapNeko/NapCatQQ/releases/latest/download/NapCat.linux.x64.zip",
+        "https://github.com/NapNeko/NapCatQQ/releases/latest/download/NapCat.win32.ia32.zip",
+        "https://github.com/NapNeko/NapCatQQ/releases/latest/download/NapCat.win32.x64.zip"
+    ],
+    "config":
+{
+    "http": {
+        "enable": false,
+        "host": "",
+        "port": 3000,
+        "secret": "",
+        "enableHeart": false,
+        "enablePost": false,
+        "postUrls": []
+    },
+    "ws": {
+        "enable": false,
+        "host": "",
+        "port": 3001
+    },
+    "reverseWs": {
+        "enable": true,
+        "urls": ["ws://NBGUI.HOST:NBGUI.PORT/onebot/v11/ws"]
+    },
+    "GroupLocalTime": {
+        "Record": false,
+        "RecordList": []
+    },
+    "debug": false,
+    "heartInterval": 30000,
+    "messagePostFormat": "array",
+    "enableLocalFile2Url": true,
+    "musicSignUrl": "",
+    "reportSelfMessage": false,
+    "token": ""
+},
+    "tip": "使用前请先安装 NTQQ",
+    "adapter": "nonebot-adapter-onebot",
+    "drivers": [
+      "fastapi",
+      "httpx",
+      "websocket",
+      "aiohttp"
+    ]
+}
