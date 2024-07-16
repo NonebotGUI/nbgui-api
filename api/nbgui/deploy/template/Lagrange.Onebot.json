@@ -61,6 +61,13 @@
           }
         ]
       },
-    "tip": "无法保证该版本为最新版本，此模板的最后更新时间为： 2024.07.15 17:25"
+    "tip": "无法保证该版本为最新版本，此模板的最后更新时间为： 2024.07.15 17:25",
+    "adapter": "nonebot-adapter-onebot",
+    "drivesr": [
+      "fastapi",
+      "httpx",
+      "websocket",
+      "aiohttp"
+    ]
 
 }

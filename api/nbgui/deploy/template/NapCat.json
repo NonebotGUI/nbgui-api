@@ -42,5 +42,12 @@
     "reportSelfMessage": false,
     "token": ""
 },
-    "tip": "使用前请先安装 NTQQ"
+    "tip": "使用前请先安装 NTQQ",
+    "adapter": "nonebot-adapter-onebot",
+    "drivesr": [
+      "fastapi",
+      "httpx",
+      "websocket",
+      "aiohttp"
+    ]
 }
