@@ -49,5 +49,6 @@
       "httpx",
       "websocket",
       "aiohttp"
-    ]
+    ],
+    "dir": ""
 }

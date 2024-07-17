@@ -69,6 +69,7 @@
       "httpx",
       "websocket",
       "aiohttp"
-    ]
+    ],
+    "dir": "public"
 
 }
