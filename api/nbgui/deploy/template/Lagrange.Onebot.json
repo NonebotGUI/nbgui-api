@@ -71,7 +71,7 @@
       "aiohttp"
     ],
     "dir": "public",
-    "needQQNum": true,
+    "needQQNum": false,
     "configName": "appsettings.json",
     "configPath": ""
 
