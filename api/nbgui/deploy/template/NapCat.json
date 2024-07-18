@@ -49,5 +49,9 @@
       "httpx",
       "websocket",
       "aiohttp"
-    ]
+    ],
+    "dir": "",
+    "needQQNum": true,
+    "configName": "onebot_NBGUI.QQNUM.json",
+    "configPath": "config/"
 }

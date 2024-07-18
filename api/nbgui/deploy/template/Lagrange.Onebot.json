@@ -10,6 +10,7 @@
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm64_8.0.zip",
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm_8.0.zip",
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-x64_8.0.zip",
+        "https://hub.xb6868.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-x64_8.0.zip",
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-arm64_8.0.zip",
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-x64_8.0.zip",
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_win-x64_8.0.zip",
@@ -68,6 +69,10 @@
       "httpx",
       "websocket",
       "aiohttp"
-    ]
+    ],
+    "dir": "public",
+    "needQQNum": false,
+    "configName": "appsettings.json",
+    "configPath": ""
 
 }
