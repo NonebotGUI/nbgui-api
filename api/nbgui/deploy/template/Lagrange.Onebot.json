@@ -70,6 +70,9 @@
       "websocket",
       "aiohttp"
     ],
-    "dir": "public"
+    "dir": "public",
+    "needQQNum": true,
+    "configName": "appsettings.json",
+    "configPath": ""
 
 }
