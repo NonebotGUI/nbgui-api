@@ -73,6 +73,6 @@
     "dir": "public",
     "needQQNum": false,
     "configName": "appsettings.json",
-    "configPath": ""
+    "configPath": "appsettings.json"
 
 }
