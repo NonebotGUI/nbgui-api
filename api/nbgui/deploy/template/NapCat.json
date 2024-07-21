@@ -47,7 +47,7 @@
     "drivers": [
       "fastapi",
       "httpx",
-      "websocket",
+      "websockets",
       "aiohttp"
     ],
     "dir": "",
