@@ -2,8 +2,8 @@
     "name": "NapCat",
     "id": 1,
     "desc": "基于 PC NTQQ 的 QQ Bot 协议端实现，使用前请先安装好 NTQQ，适用于 nonebot.adapter.onebot.v11",
-    "cmd": "./napcat.sh",
-    "cmdWin": "./napcat.ps1",
+    "cmd": "./napcat.sh -q NBGUI.QQNUM",
+    "cmdWin": "napcat.bat -q NBGUI.QQNUM",
     "dl": [
         "https://github.com/NapNeko/NapCatQQ/releases/latest/download/NapCat.linux.arm64.zip",
         "https://github.com/NapNeko/NapCatQQ/releases/latest/download/NapCat.linux.x64.zip",
@@ -47,11 +47,11 @@
     "drivers": [
       "fastapi",
       "httpx",
-      "websocket",
+      "websockets",
       "aiohttp"
     ],
     "dir": "",
     "needQQNum": true,
     "configName": "onebot_NBGUI.QQNUM.json",
-    "configPath": "config/"
+    "configPath": "config/onebot_NBGUI.QQNUM.json"
 }
