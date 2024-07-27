@@ -4,7 +4,7 @@
 
 # Usage
 
-#### Base Url
+#### Base URL
 ```
 api.zobyic.top
 ```
@@ -31,4 +31,15 @@ api.zobyic.top
 
 #插件
 /api/nbgui/proxy/plugins
+```
+
+#### 获取快速部署列表
+```
+/api/nbgui/deploy/list
+```
+
+
+##### 获取对应的部署详细内容
+```
+/api/nbgui/deploy/detail?id=<id>
 ```
