@@ -5,14 +5,14 @@
     "cmd": "./Lagrange.OneBot",
     "cmdWin": "./Lagrange.OneBot.exe",
     "dl": [
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-arm64_net8.0_SelfContained.zip",
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-arm_net8.0_SelfContained.zip",
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm64_net8.0_SelfContained.zip",
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm_net8.0_SelfContained.zip",
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-x64_net8.0_SelfContained.zip",
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-x64_net8.0_SelfContained.zip",
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-arm64_net8.0_SelfContained.zip",
-        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-x64_net8.0_SelfContained.zip",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-arm64_net8.0_SelfContained.tar.gz",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-arm_net8.0_SelfContained.tar.gz",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm64_net8.0_SelfContained.tar.gz",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-arm_net8.0_SelfContained.tar.gz",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-musl-x64_net8.0_SelfContained.tar.gz",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_linux-x64_net8.0_SelfContained.tar.gz",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-arm64_net8.0_SelfContained.tar.gz",
+        "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_osx-x64_net8.0_SelfContained.tar.gz",
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_win-x64_net8.0_SelfContained.zip",
         "https://github.com/LagrangeDev/Lagrange.Core/releases/download/nightly/Lagrange.OneBot_win-x86_net8.0_SelfContained.zip"
     ],
@@ -62,7 +62,7 @@
           }
         ]
       },
-    "tip": "无法保证该版本为最新版本，此模板的最后更新时间为： 2024.07.27 16:25",
+    "tip": "无法保证该版本为最新版本，此模板的最后更新时间为： 2024.07.28 11:04",
     "adapter": "nonebot-adapter-onebot",
     "drivers": [
       "fastapi",
