@@ -24,13 +24,13 @@ api.zobyic.top
 #### NoneBot Registry 列表的美化输出
 ```
 #适配器
-/api/nbgui/proxy/adapters
+/api/nbgui/proxy/adapters.json
 
 #驱动器
-/api/nbgui/proxy/drivers
+/api/nbgui/proxy/drivers.json
 
 #插件
-/api/nbgui/proxy/plugins
+/api/nbgui/proxy/plugins.json
 ```
 
 #### 获取快速部署列表
