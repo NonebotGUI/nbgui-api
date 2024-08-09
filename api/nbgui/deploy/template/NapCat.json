@@ -42,7 +42,7 @@
     "reportSelfMessage": false,
     "token": ""
 },
-    "tip": "使用前请先安装 NTQQ",
+    "tip": "使用前请先安装 NTQQ,该协议端可能无法完全停止，请自行结束进程",
     "adapter": "nonebot-adapter-onebot",
     "drivers": [
       "fastapi",
