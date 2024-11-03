@@ -1,0 +1,30 @@
+{
+    "name": "Lagrange.gocq",
+    "id": 1,
+    "desc": "基于 Lagrange.Core / lagrange-python / MiraiGo 的 OneBot Golang 原生实现，适用于 nonebot.adapter.onebot.v11",
+    "cmd": "./go-cqhttp",
+    "cmdWin": "./go-cqhttp.exe",
+    "dl": [
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_windows_amd64.zip",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_windows_386.zip",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_windows_arm64.zip",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_windows_armv7.zip",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_linux_amd64.tar.gz",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_linux_386.tar.gz",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_linux_arm64.tar.gz",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_linux_armv7.tar.gz",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_darwin_amd64.tar.gz",
+        "https://github.com/LagrangeDev/go-cqhttp/releases/download/v2.0.0-beta.1/go-cqhttp_darwin_arm64.tar.gz"
+    ],
+    "config": "# go-cqhttp 默认配置文件\n\n    account: # 账号相关\n      relogin: # 重连设置\n        delay: 3   # 首次重连延迟, 单位秒\n        interval: 3   # 重连间隔\n        max-times: 0  # 最大重连次数, 0为无限制\n    \n      # 是否使用服务器下发的新地址进行重连\n      # 注意, 此设置可能导致在海外服务器上连接情况更差\n      use-sso-address: true\n      # 是否允许发送临时会话消息\n      allow-temp-session: false\n    \n      # 数据包的签名服务器列表，第一个作为主签名服务器，后续作为备用\n      # 与android签名不兼容\n      # 如果遇到 登录 45 错误, 或者发送信息风控的话需要填入一个或多个服务器\n      # 不建议设置过多，设置主备各一个即可，超过 5 个只会取前五个\n      # 示例:\n      # sign-servers: \n      #   - url: 'http://127.0.0.1:8080' # 本地签名服务器\n      #   - url: 'https://signserver.example.com' # 线上签名服务器\n      #   ...\n      # \n      # 服务器不提供自建\n      sign-servers: \n        - url: 'https://sign.ciallo.site/api/sign'  # 主签名服务器地址， 必填\n        - url: 'https://sign.lagrangecore.org/api/sign/25765'  # 备用\n    \n      # 连续寻找可用签名服务器最大尝试次数\n      # 为 0 时会在连续 3 次没有找到可用签名服务器后保持使用主签名服务器，不再尝试进行切换备用\n      # 否则会在达到指定次数后 **退出** 主程序\n      max-check-count: 0\n      # 签名服务请求超时时间(s)\n      sign-server-timeout: 60\n    \n    heartbeat:\n      # 心跳频率, 单位秒\n      # -1 为关闭心跳\n      interval: 5\n    \n    message:\n      # 上报数据类型\n      # 可选: string,array\n      post-format: string\n      # 是否忽略无效的CQ码, 如果为假将原样发送\n      ignore-invalid-cqcode: false\n      # 是否强制分片发送消息\n      # 分片发送将会带来更快的速度\n      # 但是兼容性会有些问题\n      force-fragment: false\n      # 是否将url分片发送\n      fix-url: false\n      # 下载图片等请求网络代理\n      proxy-rewrite: ''\n      # 是否上报自身消息\n      report-self-message: false\n      # 移除服务端的Reply附带的At\n      remove-reply-at: false\n      # 为Reply附加更多信息\n      extra-reply-data: false\n      # 跳过 Mime 扫描, 忽略错误数据\n      skip-mime-scan: false\n      # 是否自动转换 WebP 图片\n      convert-webp-image: false\n      # download 超时时间(s)\n      http-timeout: 15\n    \n    output:\n      # 日志等级 trace,debug,info,warn,error\n      log-level: warn\n      # 日志时效 单位天. 超过这个时间之前的日志将会被自动删除. 设置为 0 表示永久保留.\n      log-aging: 15\n      # 是否在每次启动时强制创建全新的文件储存日志. 为 false 的情况下将会在上次启动时创建的日志文件续写\n      log-force-new: true\n      # 是否启用日志颜色\n      log-colorful: true\n      # 是否启用 DEBUG\n      debug: false # 开启调试模式\n    \n    # 默认中间件锚点\n    default-middlewares: &default\n      # 访问密钥, 强烈推荐在公网的服务器设置\n      access-token: ''\n      # 事件过滤器文件目录\n      filter: ''\n      # API限速设置\n      # 该设置为全局生效\n      # 原 cqhttp 虽然启用了 rate_limit 后缀, 但是基本没插件适配\n      # 目前该限速设置为令牌桶算法, 请参考:\n      # https://baike.baidu.com/item/%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95/6597000?fr=aladdin\n      rate-limit:\n        enabled: false # 是否启用限速\n        frequency: 1  # 令牌回复频率, 单位秒\n        bucket: 1     # 令牌桶大小\n    \n    database: # 数据库相关设置\n      leveldb:\n        # 是否启用内置leveldb数据库\n        # 启用将会增加10-20MB的内存占用和一定的磁盘空间\n        # 关闭将无法使用 撤回 回复 get_msg 等上下文相关功能\n        enable: true\n      sqlite3:\n        # 是否启用内置sqlite3数据库\n        # 启用将会增加一定的内存占用和一定的磁盘空间\n        # 关闭将无法使用 撤回 回复 get_msg 等上下文相关功能\n        enable: false\n        cachettl: 3600000000000 # 1h\n    \n    # 连接服务列表\n    servers:\n      # 添加方式，同一连接方式可添加多个，具体配置说明请查看文档\n      #- http: # http 通信\n      #- ws:   # 正向 Websocket\n      #- ws-reverse: # 反向 Websocket\n      #- pprof: #性能分析服务器\n      # 反向WS设置\n      - ws-reverse:\n          # 反向WS Universal 地址\n          # 注意 设置了此项地址后下面两项将会被忽略\n          universal: ws://your_websocket_universal.server\n          # 反向WS API 地址\n          api: ws://your_websocket_api.server\n          # 反向WS Event 地址\n          event: ws://your_websocket_event.server\n          # 重连间隔 单位毫秒\n          reconnect-interval: 3000\n          middlewares:\n            <<: *default # 引用默认中间件\n    ",
+    "tip": "无法保证该版本为最新版本，此模板的最后更新时间为： 2024.07.28 11:04",
+    "adapter": "nonebot-adapter-onebot",
+    "drivers": [
+      "fastapi"
+    ],
+    "dir": "public",
+    "needQQNum": false,
+    "configName": "appsettings.json",
+    "configPath": "appsettings.json"
+
+}
