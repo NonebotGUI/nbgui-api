@@ -1,0 +1,412 @@
+#!/bin/bash
+
+# NoneBot WebUI script
+# By NightWind
+# License: GPL-3.0
+# GitHub: https://github.com/XTxiaoting14332
+# https://webui.nbgui.top
+# 2025-11-24
+
+
+if [ "$EUID" -ne 0 ]; then
+    echo -e "\033[0;31m请以root用户或使用sudo权限运行此脚本\033[0m"
+    exit 1
+fi
+
+
+if ! command -v unzip &> /dev/null || ! command -v wget &> /dev/null; then
+    echo -e "\033[0;31m请先安装unzip和wget命令\033[0m"
+    exit 1
+fi
+
+
+echo -e "\033[0;32m"
+cat << "EOF"
+===========================================================================
+
+  _   _                  ____        _    __        __   _     _   _ ___ 
+ | \ | | ___  _ __   ___| __ )  ___ | |_  \ \      / /__| |__ | | | |_ _|
+ |  \| |/ _ \| '_ \ / _ \  _ \ / _ \| __|  \ \ /\ / / _ \ '_ \| | | || | 
+ | |\  | (_) | | | |  __/ |_) | (_) | |_    \ V  V /  __/ |_) | |_| || | 
+ |_| \_|\___/|_| |_|\___|____/ \___/ \__|    \_/\_/ \___|_.__/ \___/|___|
+
+
+                   NoneBot WebUI Script Installer
+                          By NightWind
+                     https://webui.nbgui.top
+===========================================================================                                                                                                                                                                                
+EOF
+echo -e "\033[0;34m功能列表:\033[0m"
+echo -e "\033[0m1. 安装 NoneBot WebUI\033[0m"
+echo -e "\033[0m2. 卸载 NoneBot WebUI\033[0m"
+echo -e "\033[0m3. 重启 NoneBot WebUI 服务\033[0m"
+echo -e "\033[0m4. 查看Agent运行状态\033[0m"
+echo -e "\033[0m5. 查看Dashboard运行状态\033[0m"
+echo -e "\033[0m6. 停止服务\033[0m"
+echo -e "\033[0m7. 启动服务\033[0m"
+echo -e "\033[0m8. 修改Dashboard密码\033[0m"
+echo -e "\033[0m9. 修改Agent密钥\033[0m"
+echo -e "\033[0m10. 退出脚本\033[0m"
+
+
+
+
+set -e
+
+
+install() {
+    clear
+    echo -e "\033[0;36m开始安装 NoneBot WebUI...\033[0m"
+    echo -e "\033[0;36m你的架构是: \033[0m$(uname -m)"
+    case "$(uname -m)" in
+        x86_64)
+            ARCH="amd64"
+            ;;
+        aarch64 | arm64)
+            ARCH="arm64"
+            ;;
+        armv7l | armhf)
+            ARCH="arm"
+            ;;    
+        *)
+            echo -e "\033[0;31m不支持的架构: $(uname -m)\033[0m"
+            exit 1
+            ;;
+    esac
+    echo -e "\033[0;33m选择你的下载镜像： \033[0m"
+    echo -e "\033[0;33m1. https://github.com \033[0m"
+    echo -e "\033[0;33m2. https://hub.myxuebi.top \033[0m"
+    echo -e "\033[0;33m3. https://gh-proxy.org \033[0m"
+    read -p "请选择(1-3): " mirror_choice
+    case $mirror_choice in
+        1)
+            BASE_URL="https://github.com/NonebotGUI/"
+            ;;
+        2)
+            BASE_URL="https://hub.myxuebi.top/NonebotGUI/"
+            ;;
+        3)
+            BASE_URL="https://gh-proxy.org/https://github.com/NonebotGUI/"
+            ;;   
+        *)
+            echo -e "\033[0;31m无效选择，默认使用 GitHub 镜像\033[0m"
+            BASE_URL="https://github.com/NonebotGUI/"
+            ;;
+    esac
+    echo -e "\033[0;36m开始下载最新版本的 NoneBot Agent...\033[0m"
+    
+    echo -e "\033[0;34m[+]mkdir -p /opt/nbwebui/agent\033[0m"
+    sudo mkdir -p /opt/nbwebui/agent
+
+    echo -e "\033[0;34m[+]wget -O /opt/nbwebui/agent/agent-linux-${ARCH} ${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}\033[0m"
+    sudo wget "${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}" -O /opt/nbwebui/agent/agent-linux-${ARCH}
+    echo -e "\033[0;34m[+]chmod +x /opt/nbwebui/agent/agent-linux-${ARCH}\033[0m"
+    sudo chmod +x /opt/nbwebui/agent/agent-linux-${ARCH}
+
+    echo -e "\033[0;32mAgent下载完成\033[0m"
+    echo -e "\033[0;36m开始下载最新版本的 NoneBot WebUI Dashboard Self Host...\033[0m"
+
+    echo -e "\033[0;34m[+]mkdir -p /opt/nbwebui/dashboard\033[0m"
+    sudo mkdir -p /opt/nbwebui/dashboard
+    echo -e "\033[0;34m[+]wget -O /opt/nbwebui/dashboard/dashboard-linux-${ARCH} ${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}\033[0m"
+    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}" -O /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+    echo -e "\033[0;34m[+]chmod +x /opt/nbwebui/dashboard/dashboard-linux-${ARCH}\033[0m"
+    sudo chmod +x /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+    echo -e "\033[0;32mSelf Host下载完成\033[0m"
+    
+    echo -e "\033[0;36m开始下载最新版本的Dashboard...\033[0m"
+    echo -e "\033[0;34m[+]wget -O /opt/nbwebui/dashboard/dashboard.zip ${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip\033[0m"
+    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip" -O /opt/nbwebui/dashboard/dashboard.zip
+    echo -e "\033[0;34m[+]unzip -o -qq /opt/nbwebui/dashboard/dashboard.zip -d /opt/nbwebui/dashboard/\033[0m"
+    sudo unzip -o -qq /opt/nbwebui/dashboard/dashboard.zip -d /opt/nbwebui/dashboard/
+    echo -e "\033[0;34m[+]rm /opt/nbwebui/dashboard/dashboard.zip\033[0m"
+    sudo rm /opt/nbwebui/dashboard/dashboard.zip
+    echo -e "\033[0;32mDashboard下载完成\033[0m"
+    
+    read -p "请输入Agent监听端口（默认： 2519）: " agent_port
+    read -p "请输入Dashboard监听端口（默认： 8025）: " dashboard_port
+    read -p "请输入Agent密钥（默认：nbagent-secret）: " agent_key
+    read -p "请输入Dashboard密码（默认：admin）: " dashboard_password
+
+    agent_port=${agent_port:-2519}
+    dashboard_port=${dashboard_port:-8025}
+    agent_key=${agent_key:-nbagent-secret}
+    dashboard_password=${dashboard_password:-admin}
+
+    echo -e "\033[0;36m创建配置文件...\033[0m"
+    sudo bash -c "cat > /opt/nbwebui/agent/config.json << EOF
+{
+  \"host\": \"127.0.0.1\",
+  \"port\": ${agent_port},
+  \"token\": \"${agent_key}\",
+  \"logMaxLines\": 75,
+  \"python\": \"default\",
+  \"nbcli\": \"default\",
+  \"color\": \"light\",
+  \"checkUpdate\": true,
+  \"wss\": {
+    \"enabled\": false,
+    \"certpath\": \"\",
+    \"keypath\": \"\"
+  }
+}
+EOF"
+
+    sudo bash -c "cat > /opt/nbwebui/dashboard/config.json << EOF
+{
+  \"host\": \"0.0.0.0\",
+  \"port\": ${dashboard_port},
+  \"password\": \"${dashboard_password}\",
+  \"connection\": {
+    \"host\": \"127.0.0.1\",
+    \"port\": ${agent_port},
+    \"token\": \"${agent_key}\"
+  },
+  \"connectionMode\": 2,
+  \"theme\": {
+    \"color\": \"light\",
+    \"img\": \"default\",
+    \"text\": \"default\",
+    \"hitokoto\": false 
+  }
+}
+EOF"
+
+    echo -e "\033[0;36m创建用户\033[0m nbwebui"
+
+    echo -e "\033[0;34m[+]sudo useradd -r -s /bin/false nbwebui\033[0m"
+    sudo useradd -r -s /bin/false nbwebui
+
+    echo -e "\033[0;36m设置文件权限...\033[0m"
+
+    echo -e "\033[0;34m[+]sudo chown -R nbwebui:nbwebui /opt/nbwebui\033[0m"
+    sudo chown -R nbwebui:nbwebui /opt/nbwebui
+
+    echo -e "\033[0;36m创建Systemd服务文件...\033[0m"
+    sudo bash -c "cat > /etc/systemd/system/nbwebui-agent.service << EOF
+[Unit]
+Description=NoneBot WebUI Agent Service
+After=network.target
+[Service]
+Type=simple
+User=nbwebui
+WorkingDirectory=/opt/nbwebui/agent/
+ExecStart=/opt/nbwebui/agent/agent-linux-${ARCH}
+Restart=on-failure
+StartLimitIntervalSec=60
+StartLimitBurst=5
+[Install]
+WantedBy=multi-user.target
+EOF"
+    sudo bash -c "cat > /etc/systemd/system/nbwebui-dashboard.service << EOF
+[Unit]
+Description=NoneBot WebUI Dashboard Service
+After=network.target
+[Service]
+Type=simple
+User=nbwebui
+WorkingDirectory=/opt/nbwebui/dashboard/
+ExecStart=/opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+Restart=on-failure
+StartLimitIntervalSec=60
+StartLimitBurst=5
+[Install]
+WantedBy=multi-user.target
+EOF"
+
+    echo -e "\033[0;36m启动服务...\033[0m"
+
+    echo -e "\033[0;34m[+]sudo systemctl daemon-reload\033[0m"
+    sudo systemctl daemon-reload
+
+    echo -e "\033[0;34m[+]sudo systemctl enable nbwebui-agent\033[0m"
+    sudo systemctl enable nbwebui-agent
+
+    echo -e "\033[0;34m[+]sudo systemctl enable nbwebui-dashboard\033[0m"
+    sudo systemctl enable nbwebui-dashboard
+
+    echo -e "\033[0;34m[+]sudo systemctl start nbwebui-agent\033[0m"
+    sudo systemctl start nbwebui-agent
+
+    echo -e "\033[0;34m[+]sudo systemctl start nbwebui-dashboard\033[0m"
+    sudo systemctl start nbwebui-dashboard
+
+    echo -e "\033[0;32m安装完成！\033[0m"
+    echo -e "\033[0;33mDashboard地址: http://你的服务器IP:${dashboard_port}\033[0m"
+    echo -e "\033[0;33mDashboard的密码: ${dashboard_password}\033[0m"
+    echo -e "\033[0;33mAgent配置文件位于/opt/nbwebui/agent/config.json\033[0m"
+    echo -e "\033[0;33mDashboard配置文件位于/opt/nbwebui/dashboard/config.json\033[0m"
+
+    echo -e "\033[0;33m请确保你的防火墙已开放${dashboard_port}端口\033[0m"
+
+
+}
+
+
+uninstall() {
+    read -p "确定要卸载 NoneBot WebUI 吗？(y/n): " confirm
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+        echo -e "\033[0;33m卸载已取消\033[0m"
+        exit 0
+    fi
+    echo -e "\033[0;36m正在停止服务...\033[0m"
+
+    echo -e "\033[0;34m[+]sudo systemctl stop nbwebui-agent\033[0m"
+    sudo systemctl stop nbwebui-agent
+
+    echo -e "\033[0;34m[+]sudo systemctl stop nbwebui-dashboard\033[0m"
+    sudo systemctl stop nbwebui-dashboard
+
+    echo -e "\033[0;36m正在禁用服务...\033[0m"
+    echo -e "\033[0;34m[+]sudo systemctl disable nbwebui-agent\033[0m"
+    sudo systemctl disable nbwebui-agent
+
+    echo -e "\033[0;34m[+]sudo systemctl disable nbwebui-dashboard\033[0m"
+    sudo systemctl disable nbwebui-dashboard
+
+    echo -e "\033[0;36m正在删除服务文件...\033[0m"
+    echo -e "\033[0;34m[+]sudo rm /etc/systemd/system/nbwebui-agent.service\033[0m"
+    sudo rm /etc/systemd/system/nbwebui-agent.service
+
+    echo -e "\033[0;34m[+]sudo rm /etc/systemd/system/nbwebui-dashboard.service\033[0m"
+    sudo rm /etc/systemd/system/nbwebui-dashboard.service
+
+    echo -e "\033[0;36m正在删除安装文件...\033[0m"
+    echo -e "\033[0;34m[+]sudo rm -rf /opt/nbwebui\033[0m"
+    sudo rm -rf /opt/nbwebui
+
+    echo -e "\033[0;36m正在删除用户...\033[0m"
+    echo -e "\033[0;34m[+]sudo userdel nbwebui\033[0m"
+    sudo userdel nbwebui
+
+    echo -e "\033[0;36m正在重新加载Systemd守护进程...\033[0m"
+    echo -e "\033[0;34m[+]sudo systemctl daemon-reload\033[0m"
+    sudo systemctl daemon-reload
+
+    echo -e "\033[0;32m卸载完成！\033[0m"
+}
+
+
+restart(){
+    echo -e "\033[0;36m正在重启 NoneBot WebUI 服务...\033[0m"
+
+    echo -e "\033[0;34m[+]sudo systemctl restart nbwebui-agent\033[0m"
+    sudo systemctl restart nbwebui-agent
+
+    echo -e "\033[0;34m[+]sudo systemctl restart nbwebui-dashboard\033[0m"
+    sudo systemctl restart nbwebui-dashboard
+
+    echo -e "\033[0;32m重启完成！\033[0m"
+}
+
+
+
+stop_nbwebui(){
+    echo -e "\033[0;36m正在停止 NoneBot WebUI 服务...\033[0m"
+
+    echo -e "\033[0;34m[+]sudo systemctl stop nbwebui-agent\033[0m"
+    sudo systemctl stop nbwebui-agent
+
+    echo -e "\033[0;34m[+]sudo systemctl stop nbwebui-dashboard\033[0m"
+    sudo systemctl stop nbwebui-dashboard
+
+    echo -e "\033[0;32m已停止！\033[0m"
+}
+
+start_nbwebui(){
+    echo -e "\033[0;36m正在启动 NoneBot WebUI 服务...\033[0m"
+
+    echo -e "\033[0;34m[+]sudo systemctl start nbwebui-agent\033[0m"
+    sudo systemctl start nbwebui-agent
+
+    echo -e "\033[0;34m[+]sudo systemctl start nbwebui-dashboard\033[0m"
+    sudo systemctl start nbwebui-dashboard
+
+    echo -e "\033[0;32m已启动！\033[0m"
+}
+
+
+change_dashboard_password(){
+    read -p "请输入新的Dashboard密码: " new_password
+    if [ -z "$new_password" ]; then
+        echo -e "\033[0;31m密码不能为空！\033[0m"
+        exit 1
+    fi
+    sudo sed -i "s/\"password\": \".*\"/\"password\": \"${new_password}\"/" /opt/nbwebui/dashboard/config.json
+    echo -e "\033[0;32mDashboard密码已更新！\033[0m"
+    echo -e "\033[0;33m正在重启Dashboard服务......\033[0m"
+    echo -e "\033[0;34m[+]sudo systemctl restart nbwebui-dashboard\033[0m"
+    sudo systemctl restart nbwebui-dashboard
+    echo -e "\033[0;34m[+]sudo rm -f /opt/nbwebui/dashboard/secret.key\033[0m"
+    sudo rm -f /opt/nbwebui/dashboard/secret.key
+    echo -e "\033[0;32mDashboard已重启！\033[0m"
+}
+
+
+change_agent_key(){
+    read -p "请输入新的Agent密钥: " new_key
+    if [ -z "$new_key" ]; then
+        echo -e "\033[0;31m密钥不能为空！\033[0m"
+        exit 1
+    fi
+    sudo sed -i "s/\"token\": \".*\"/\"token\": \"${new_key}\"/" /opt/nbwebui/agent/config.json
+    sudo sed -i "s/\"token\": \".*\"/\"token\": \"${new_key}\"/" /opt/nbwebui/dashboard/config.json
+    echo -e "\033[0;32mAgent密钥已更新！\033[0m"
+    echo -e "\033[0;33m正在重启服务......\033[0m"
+    echo -e "\033[0;34m[+]sudo systemctl restart nbwebui-agent\033[0m"
+    sudo systemctl restart nbwebui-agent
+    echo -e "\033[0;34m[+]sudo systemctl restart nbwebui-dashboard\033[0m"
+    sudo systemctl restart nbwebui-dashboard
+    echo -e "\033[0;32m服务已重启！\033[0m"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+read -p "请选择(1-10): " choice
+
+case $choice in
+    1)
+        install
+        ;;
+    2)
+        uninstall
+        ;;
+    3)
+        restart
+        ;;
+    4)
+        systemctl status nbwebui-agent
+        ;;
+    5)
+        systemctl status nbwebui-dashboard
+        ;;
+    6)
+        stop_nbwebui
+        ;;
+    7)
+        start_nbwebui
+        ;;
+    8)
+        change_dashboard_password
+        ;;
+    9)
+        change_agent_key
+        ;;
+    10)
+        exit 0
+        ;;
+    *)
+        echo "无效选择，请选择1-10之间的数字"
+        ;;
+esac
