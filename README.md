@@ -6,7 +6,7 @@
 
 #### Base URL
 ```
-api.zobyic.top
+api.nbgui.top
 ```
 
 ### GET
