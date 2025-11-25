@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import os
 
-class InstallScriptHandler(BaseHTTPRequestHandler):
+class handler(BaseHTTPRequestHandler):
     def do_GET(self):   
         try:
             with open('api/nbgui/script/install' "r", encoding="utf-8") as file:
