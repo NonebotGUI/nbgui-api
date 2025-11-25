@@ -27,8 +27,7 @@ if [ "$EUID" -ne 0 ]; then
     echo -e "\033[0;33m如果你不放心，可使用Ctrl+C来退出脚本并参考https://webui.nbgui.top 进行手动或者Docker安装\033[0m"
     echo -e "\033[0;33m==================================================\033[0m"
     if sudo -n true 2>/dev/null; then
-        echo -e "\033[0;32m使用sudo权限重新运行脚本...\033[0m"
-        exec sudo bash "$0" "$@"
+        echo -e ""
     else
         echo -e "\033[0;36m输入密码以提升权限\033[0m"
         sudo -v
