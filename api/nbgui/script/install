@@ -394,10 +394,10 @@ case $choice in
         restart
         ;;
     4)
-        systemctl status nbwebui-agent
+        sudo systemctl status nbwebui-agent
         ;;
     5)
-        systemctl status nbwebui-dashboard
+        sudo systemctl status nbwebui-dashboard
         ;;
     6)
         stop_nbwebui
