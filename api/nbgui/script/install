@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# NoneBot WebUI script
+# NoneBot WebUI script v1.1
 # By NightWind
 # License: GPL-3.0
 # GitHub: https://github.com/XTxiaoting14332
@@ -8,16 +8,37 @@
 # 2025-11-24
 
 
-if [ "$EUID" -ne 0 ]; then
-    echo -e "\033[0;31m请以root用户或使用sudo权限运行此脚本\033[0m"
-    exit 1
-fi
-
 
 if ! command -v unzip &> /dev/null || ! command -v wget &> /dev/null; then
     echo -e "\033[0;31m请先安装unzip和wget命令\033[0m"
     exit 1
 fi
+
+
+if [ "$EUID" -ne 0 ]; then
+    echo -e "\033[0;33m==================================================\033[0m"
+    echo -e "\033[0;33m注意注意！！！\033[0m"
+    echo -e "\033[0;33m该脚本需要root或者sudo权限以确保正常运行！\033[0m"
+    echo -e "\033[0;36m权限将会被用来进行以下操作：\033[0m"
+    echo -e "\033[0;36m1. 在/opt目录下创建文件夹以存放程序文件\033[0m"
+    echo -e "\033[0;36m2. 创建系统用户nbwebui以运行服务\033[0m"
+    echo -e "\033[0;36m3. 创建和管理NoneBot WebUI的Systemd服务\033[0m"
+    echo -e "\033[0;33m请确保你理解这些操作并信任此脚本的来源！\033[0m"
+    echo -e "\033[0;33m如果你不放心，可使用Ctrl+C来退出脚本并参考https://webui.nbgui.top 进行手动或者Docker安装\033[0m"
+    echo -e "\033[0;33m==================================================\033[0m"
+    if sudo -n true 2>/dev/null; then
+        echo -e "\033[0;32m使用sudo权限重新运行脚本...\033[0m"
+        exec sudo bash "$0" "$@"
+    else
+        echo -e "\033[0;36m输入密码以提升权限\033[0m"
+        sudo -v
+        if [ $? -ne 0 ]; then
+            echo -e "\033[0;31m无法获取sudo权限，脚本终止运行\033[0m"
+            exit 1
+        fi
+    fi
+fi
+
 
 
 echo -e "\033[0;32m"
