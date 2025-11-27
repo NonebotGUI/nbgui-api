@@ -193,9 +193,12 @@ EOF"
 EOF"
 
     echo -e "\033[0;36m创建用户\033[0m nbwebui"
-
-    echo -e "\033[0;34m[+]sudo useradd -r -s /bin/false nbwebui\033[0m"
-    sudo useradd -r -s /bin/false nbwebui
+    if id "nbwebui" &>/dev/null; then
+        echo -e "\033[0;33m用户 nbwebui 已存在，跳过创建\033[0m"
+    else
+        echo -e "\033[0;34m[+]sudo useradd -r -s /bin/false nbwebui\033[0m"
+        sudo useradd -r -s /bin/false nbwebui
+    fi
 
     CURRENT_USER=$(logname || echo $SUDO_USER || echo $USER)
     if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "root" ]; then
