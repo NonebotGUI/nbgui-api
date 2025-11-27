@@ -197,6 +197,14 @@ EOF"
     echo -e "\033[0;34m[+]sudo useradd -r -s /bin/false nbwebui\033[0m"
     sudo useradd -r -s /bin/false nbwebui
 
+    CURRENT_USER=$(logname || echo $SUDO_USER || echo $USER)
+    if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "root" ]; then
+        echo -e "\033[0;36m正在将 nbwebui 用户加入到 $CURRENT_USER 组...\033[0m"
+        sudo usermod -aG "$CURRENT_USER" nbwebui
+        echo -e "\033[0;33m注意：如果 nbwebui 需要访问 /home/$CURRENT_USER 下的文件，\033[0m"
+        echo -e "\033[0;33m请确保该目录对组用户有读取/执行权限 (chmod g+rx /home/$CURRENT_USER)\033[0m"
+    fi
+
     echo -e "\033[0;36m设置文件权限...\033[0m"
 
     echo -e "\033[0;34m[+]sudo chown -R nbwebui:nbwebui /opt/nbwebui\033[0m"
