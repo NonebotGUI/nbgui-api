@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# NoneBot WebUI script v1.1
+# NoneBot WebUI script v1.2
 # By NightWind
 # License: GPL-3.0
 # GitHub: https://github.com/XTxiaoting14332
 # https://webui.nbgui.top
-# 2025-11-24
+# 2026-03-04
 
 
 
@@ -66,7 +66,8 @@ echo -e "\033[0m6. 停止服务\033[0m"
 echo -e "\033[0m7. 启动服务\033[0m"
 echo -e "\033[0m8. 修改Dashboard密码\033[0m"
 echo -e "\033[0m9. 修改Agent密钥\033[0m"
-echo -e "\033[0m10. 退出脚本\033[0m"
+echo -e "\033[0m10. 更新 NoneBot WebUI\033[0m"
+echo -e "\033[0m11. 退出脚本\033[0m"
 
 
 
@@ -392,7 +393,79 @@ change_agent_key(){
 }
 
 
-read -p "请选择(1-10): " choice < /dev/tty
+update() {
+    echo -e "\033[0;36m正在停止服务以进行更新...\033[0m"
+    sudo systemctl stop nbwebui-agent
+    sudo systemctl stop nbwebui-dashboard
+    
+    echo -e "\033[0;36m你的架构是: \033[0m$(uname -m)"
+    case "$(uname -m)" in
+        x86_64)
+            ARCH="amd64"
+            ;;
+        aarch64 | arm64)
+            ARCH="arm64"
+            ;;
+        armv7l | armhf)
+            ARCH="arm"
+            ;;    
+        *)
+            echo -e "\033[0;31m不支持的架构: $(uname -m)\033[0m"
+            exit 1
+            ;;
+    esac
+
+    echo -e "\033[0;33m选择你的下载镜像： \033[0m"
+    echo -e "\033[0;33m1. https://github.com \033[0m"
+    echo -e "\033[0;33m2. https://hub.myxuebi.top \033[0m"
+    echo -e "\033[0;33m3. https://gh-proxy.org \033[0m"
+    read -p "请选择(1-3): " mirror_choice < /dev/tty
+    case $mirror_choice in
+        1)
+            BASE_URL="https://github.com/NonebotGUI/"
+            ;;
+        2)
+            BASE_URL="https://hub.myxuebi.top/NonebotGUI/"
+            ;;
+        3)
+            BASE_URL="https://gh-proxy.org/https://github.com/NonebotGUI/"
+            ;;   
+        *)
+            echo -e "\033[0;31m无效选择，默认使用 GitHub 镜像\033[0m"
+            BASE_URL="https://github.com/NonebotGUI/"
+            ;;
+    esac
+
+    echo -e "\033[0;36m清理旧版本文件...\033[0m"
+    sudo rm -f /opt/nbwebui/agent/agent-linux-*
+    sudo rm -f /opt/nbwebui/dashboard/dashboard-linux-*
+
+    echo -e "\033[0;36m开始下载最新版本的 NoneBot Agent...\033[0m"
+    sudo wget "${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}" -O /opt/nbwebui/agent/agent-linux-${ARCH}
+    sudo chmod +x /opt/nbwebui/agent/agent-linux-${ARCH}
+    
+    echo -e "\033[0;36m开始下载最新版本的 NoneBot WebUI Dashboard Self Host...\033[0m"
+    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}" -O /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+    sudo chmod +x /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+
+    echo -e "\033[0;36m开始下载最新版本的Dashboard资源...\033[0m"
+    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip" -O /opt/nbwebui/dashboard/dashboard.zip
+    sudo unzip -o -qq /opt/nbwebui/dashboard/dashboard.zip -d /opt/nbwebui/dashboard/
+    sudo rm /opt/nbwebui/dashboard/dashboard.zip
+
+    echo -e "\033[0;36m重置文件权限...\033[0m"
+    sudo chown -R nbwebui:nbwebui /opt/nbwebui
+
+    echo -e "\033[0;36m重启服务...\033[0m"
+    sudo systemctl daemon-reload
+    sudo systemctl start nbwebui-agent
+    sudo systemctl start nbwebui-dashboard
+
+    echo -e "\033[0;32m更新完成！\033[0m"
+}
+
+
+read -p "请选择(1-11): " choice < /dev/tty
 
 case $choice in
     1)
@@ -423,9 +496,12 @@ case $choice in
         change_agent_key
         ;;
     10)
+        update
+        ;;
+    11)
         exit 0
         ;;
     *)
-        echo "无效选择，请选择1-10之间的数字"
+        echo "无效选择，请选择1-11之间的数字"
         ;;
 esac
