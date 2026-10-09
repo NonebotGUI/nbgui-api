@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# NoneBot WebUI script v1.2
+# NoneBot WebUI script v1.3
 # By NightWind
 # License: GPL-3.0
 # GitHub: https://github.com/XTxiaoting14332
 # https://webui.nbgui.top
-# 2026-03-04
+# 2026-10-09
 
 
 
@@ -15,14 +15,26 @@ if ! command -v unzip &> /dev/null || ! command -v wget &> /dev/null; then
 fi
 
 
+# 识别运行脚本的真实用户及其家目录（兼容直接以root或sudo运行的情况）
+if [ "$EUID" -eq 0 ]; then
+    REAL_USER="${SUDO_USER:-$(logname 2>/dev/null || echo root)}"
+else
+    REAL_USER="$(id -un)"
+fi
+REAL_HOME="$(getent passwd "$REAL_USER" | cut -d: -f6)"
+if [ -z "$REAL_HOME" ]; then
+    REAL_HOME="$(eval echo "~${REAL_USER}")"
+fi
+INSTALL_DIR="${REAL_HOME}/.local/share/nbwebui"
+
+
 if [ "$EUID" -ne 0 ]; then
     echo -e "\033[0;33m==================================================\033[0m"
     echo -e "\033[0;33m注意注意！！！\033[0m"
-    echo -e "\033[0;33m该脚本需要root或者sudo权限以确保正常运行！\033[0m"
+    echo -e "\033[0;33m该脚本需要sudo权限以管理系统服务，请确保你理解并信任此脚本的来源！\033[0m"
     echo -e "\033[0;36m权限将会被用来进行以下操作：\033[0m"
-    echo -e "\033[0;36m1. 在/opt目录下创建文件夹以存放程序文件\033[0m"
-    echo -e "\033[0;36m2. 创建系统用户nbwebui以运行服务\033[0m"
-    echo -e "\033[0;36m3. 创建和管理NoneBot WebUI的Systemd服务\033[0m"
+    echo -e "\033[0;36m1. 在 ${INSTALL_DIR} 下安装程序文件（以用户 ${REAL_USER} 的身份运行）\033[0m"
+    echo -e "\033[0;36m2. 创建并管理以 ${REAL_USER} 用户运行的NoneBot WebUI的Systemd服务\033[0m"
     echo -e "\033[0;33m请确保你理解这些操作并信任此脚本的来源！\033[0m"
     echo -e "\033[0;33m如果你不放心，可使用Ctrl+C来退出脚本并参考https://webui.nbgui.top 进行手动或者Docker安装\033[0m"
     echo -e "\033[0;33m==================================================\033[0m"
@@ -43,17 +55,17 @@ fi
 echo -e "\033[0;32m"
 cat << "EOF"
 ===========================================================================
-
-  _   _                  ____        _    __        __   _     _   _ ___ 
- | \ | | ___  _ __   ___| __ )  ___ | |_  \ \      / /__| |__ | | | |_ _|
- |  \| |/ _ \| '_ \ / _ \  _ \ / _ \| __|  \ \ /\ / / _ \ '_ \| | | || | 
- | |\  | (_) | | | |  __/ |_) | (_) | |_    \ V  V /  __/ |_) | |_| || | 
- |_| \_|\___/|_| |_|\___|____/ \___/ \__|    \_/\_/ \___|_.__/ \___/|___|
-
-
-                   NoneBot WebUI Script Installer
-                          By NightWind
-                     https://webui.nbgui.top
+|
+|  _   _                  ____        _    __        __   _     _   _ ___ 
+| | \ | | ___  _ __   ___| __ )  ___ | |_  \ \      / /__| |__ | | | |_ _|
+| |  \| |/ _ \| '_ \ / _ \  _ \ / _ \| __|  \ \ /\ / / _ \ '_ \| | | || | 
+| | |\  | (_) | | | |  __/ |_) | (_) | |_    \ V  V /  __/ |_) | |_| || | 
+| |_| \_|\___/|_| |_|\___|____/ \___/ \__|    \_/\_/ \___|_.__/ \___/|___|
+|
+|
+|                   NoneBot WebUI Script Installer
+|                          By NightWind
+|                     https://webui.nbgui.top
 ===========================================================================                                                                                                                                                                                
 EOF
 echo -e "\033[0;34m功能列表:\033[0m"
@@ -116,32 +128,32 @@ install() {
     esac
     echo -e "\033[0;36m开始下载最新版本的 NoneBot Agent...\033[0m"
     
-    echo -e "\033[0;34m[+]mkdir -p /opt/nbwebui/agent\033[0m"
-    sudo mkdir -p /opt/nbwebui/agent
+    echo -e "\033[0;34m[+]mkdir -p ${INSTALL_DIR}/agent\033[0m"
+    mkdir -p "${INSTALL_DIR}/agent"
 
-    echo -e "\033[0;34m[+]wget -O /opt/nbwebui/agent/agent-linux-${ARCH} ${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}\033[0m"
-    sudo wget "${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}" -O /opt/nbwebui/agent/agent-linux-${ARCH}
-    echo -e "\033[0;34m[+]chmod +x /opt/nbwebui/agent/agent-linux-${ARCH}\033[0m"
-    sudo chmod +x /opt/nbwebui/agent/agent-linux-${ARCH}
+    echo -e "\033[0;34m[+]wget -O ${INSTALL_DIR}/agent/agent-linux-${ARCH} ${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}\033[0m"
+    wget "${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}" -O "${INSTALL_DIR}/agent/agent-linux-${ARCH}"
+    echo -e "\033[0;34m[+]chmod +x ${INSTALL_DIR}/agent/agent-linux-${ARCH}\033[0m"
+    chmod +x "${INSTALL_DIR}/agent/agent-linux-${ARCH}"
 
     echo -e "\033[0;32mAgent下载完成\033[0m"
     echo -e "\033[0;36m开始下载最新版本的 NoneBot WebUI Dashboard Self Host...\033[0m"
 
-    echo -e "\033[0;34m[+]mkdir -p /opt/nbwebui/dashboard\033[0m"
-    sudo mkdir -p /opt/nbwebui/dashboard
-    echo -e "\033[0;34m[+]wget -O /opt/nbwebui/dashboard/dashboard-linux-${ARCH} ${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}\033[0m"
-    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}" -O /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
-    echo -e "\033[0;34m[+]chmod +x /opt/nbwebui/dashboard/dashboard-linux-${ARCH}\033[0m"
-    sudo chmod +x /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+    echo -e "\033[0;34m[+]mkdir -p ${INSTALL_DIR}/dashboard\033[0m"
+    mkdir -p "${INSTALL_DIR}/dashboard"
+    echo -e "\033[0;34m[+]wget -O ${INSTALL_DIR}/dashboard/dashboard-linux-${ARCH} ${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}\033[0m"
+    wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}" -O "${INSTALL_DIR}/dashboard/dashboard-linux-${ARCH}"
+    echo -e "\033[0;34m[+]chmod +x ${INSTALL_DIR}/dashboard/dashboard-linux-${ARCH}\033[0m"
+    chmod +x "${INSTALL_DIR}/dashboard/dashboard-linux-${ARCH}"
     echo -e "\033[0;32mSelf Host下载完成\033[0m"
     
     echo -e "\033[0;36m开始下载最新版本的Dashboard...\033[0m"
-    echo -e "\033[0;34m[+]wget -O /opt/nbwebui/dashboard/dashboard.zip ${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip\033[0m"
-    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip" -O /opt/nbwebui/dashboard/dashboard.zip
-    echo -e "\033[0;34m[+]unzip -o -qq /opt/nbwebui/dashboard/dashboard.zip -d /opt/nbwebui/dashboard/\033[0m"
-    sudo unzip -o -qq /opt/nbwebui/dashboard/dashboard.zip -d /opt/nbwebui/dashboard/
-    echo -e "\033[0;34m[+]rm /opt/nbwebui/dashboard/dashboard.zip\033[0m"
-    sudo rm /opt/nbwebui/dashboard/dashboard.zip
+    echo -e "\033[0;34m[+]wget -O ${INSTALL_DIR}/dashboard/dashboard.zip ${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip\033[0m"
+    wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip" -O "${INSTALL_DIR}/dashboard/dashboard.zip"
+    echo -e "\033[0;34m[+]unzip -o -qq ${INSTALL_DIR}/dashboard/dashboard.zip -d ${INSTALL_DIR}/dashboard/\033[0m"
+    unzip -o -qq "${INSTALL_DIR}/dashboard/dashboard.zip" -d "${INSTALL_DIR}/dashboard/"
+    echo -e "\033[0;34m[+]rm ${INSTALL_DIR}/dashboard/dashboard.zip\033[0m"
+    rm "${INSTALL_DIR}/dashboard/dashboard.zip"
     echo -e "\033[0;32mDashboard下载完成\033[0m"
     
     read -p "请输入Agent监听端口（默认： 2519）: " agent_port < /dev/tty
@@ -155,64 +167,43 @@ install() {
     dashboard_password=${dashboard_password:-admin}
 
     echo -e "\033[0;36m创建配置文件...\033[0m"
-    sudo bash -c "cat > /opt/nbwebui/agent/config.json << EOF
+    cat > "${INSTALL_DIR}/agent/config.json" << EOF
 {
-  \"host\": \"127.0.0.1\",
-  \"port\": ${agent_port},
-  \"token\": \"${agent_key}\",
-  \"logMaxLines\": 75,
-  \"python\": \"default\",
-  \"nbcli\": \"default\",
-  \"color\": \"light\",
-  \"checkUpdate\": true,
-  \"wss\": {
-    \"enabled\": false,
-    \"certpath\": \"\",
-    \"keypath\": \"\"
+  "host": "127.0.0.1",
+  "port": ${agent_port},
+  "token": "${agent_key}",
+  "logMaxLines": 75,
+  "python": "default",
+  "nbcli": "default",
+  "color": "light",
+  "checkUpdate": true,
+  "wss": {
+    "enabled": false,
+    "certpath": "",
+    "keypath": ""
   }
 }
-EOF"
+EOF
 
-    sudo bash -c "cat > /opt/nbwebui/dashboard/config.json << EOF
+    cat > "${INSTALL_DIR}/dashboard/config.json" << EOF
 {
-  \"host\": \"0.0.0.0\",
-  \"port\": ${dashboard_port},
-  \"password\": \"${dashboard_password}\",
-  \"connection\": {
-    \"host\": \"127.0.0.1\",
-    \"port\": ${agent_port},
-    \"token\": \"${agent_key}\"
+  "host": "0.0.0.0",
+  "port": ${dashboard_port},
+  "password": "${dashboard_password}",
+  "connection": {
+    "host": "127.0.0.1",
+    "port": ${agent_port},
+    "token": "${agent_key}"
   },
-  \"connectionMode\": 2,
-  \"theme\": {
-    \"color\": \"light\",
-    \"img\": \"default\",
-    \"text\": \"default\",
-    \"hitokoto\": false 
+  "connectionMode": 2,
+  "theme": {
+    "color": "light",
+    "img": "default",
+    "text": "default",
+    "hitokoto": false 
   }
 }
-EOF"
-
-    echo -e "\033[0;36m创建用户\033[0m nbwebui"
-    if id "nbwebui" &>/dev/null; then
-        echo -e "\033[0;33m用户 nbwebui 已存在，跳过创建\033[0m"
-    else
-        echo -e "\033[0;34m[+]sudo useradd -r -s /bin/false nbwebui\033[0m"
-        sudo useradd -r -s /bin/false nbwebui
-    fi
-
-    CURRENT_USER=$(logname || echo $SUDO_USER || echo $USER)
-    if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "root" ]; then
-        echo -e "\033[0;36m正在将 nbwebui 用户加入到 $CURRENT_USER 组...\033[0m"
-        sudo usermod -aG "$CURRENT_USER" nbwebui
-        echo -e "\033[0;33m注意：如果 nbwebui 需要访问 /home/$CURRENT_USER 下的文件，\033[0m"
-        echo -e "\033[0;33m请确保该目录对组用户有读取/执行权限 (chmod g+rx /home/$CURRENT_USER)\033[0m"
-    fi
-
-    echo -e "\033[0;36m设置文件权限...\033[0m"
-
-    echo -e "\033[0;34m[+]sudo chown -R nbwebui:nbwebui /opt/nbwebui\033[0m"
-    sudo chown -R nbwebui:nbwebui /opt/nbwebui
+EOF
 
     echo -e "\033[0;36m创建Systemd服务文件...\033[0m"
     sudo bash -c "cat > /etc/systemd/system/nbwebui-agent.service << EOF
@@ -221,9 +212,9 @@ Description=NoneBot WebUI Agent Service
 After=network.target
 [Service]
 Type=simple
-User=nbwebui
-WorkingDirectory=/opt/nbwebui/agent/
-ExecStart=/opt/nbwebui/agent/agent-linux-${ARCH}
+User=${REAL_USER}
+WorkingDirectory=${INSTALL_DIR}/agent/
+ExecStart=${INSTALL_DIR}/agent/agent-linux-${ARCH}
 Restart=on-failure
 StartLimitIntervalSec=60
 StartLimitBurst=5
@@ -236,9 +227,9 @@ Description=NoneBot WebUI Dashboard Service
 After=network.target
 [Service]
 Type=simple
-User=nbwebui
-WorkingDirectory=/opt/nbwebui/dashboard/
-ExecStart=/opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+User=${REAL_USER}
+WorkingDirectory=${INSTALL_DIR}/dashboard/
+ExecStart=${INSTALL_DIR}/dashboard/dashboard-linux-${ARCH}
 Restart=on-failure
 StartLimitIntervalSec=60
 StartLimitBurst=5
@@ -266,8 +257,8 @@ EOF"
     echo -e "\033[0;32m安装完成！\033[0m"
     echo -e "\033[0;33mDashboard地址: http://你的服务器IP:${dashboard_port}\033[0m"
     echo -e "\033[0;33mDashboard的密码: ${dashboard_password}\033[0m"
-    echo -e "\033[0;33mAgent配置文件位于/opt/nbwebui/agent/config.json\033[0m"
-    echo -e "\033[0;33mDashboard配置文件位于/opt/nbwebui/dashboard/config.json\033[0m"
+    echo -e "\033[0;33mAgent配置文件位于${INSTALL_DIR}/agent/config.json\033[0m"
+    echo -e "\033[0;33mDashboard配置文件位于${INSTALL_DIR}/dashboard/config.json\033[0m"
 
     echo -e "\033[0;33m请确保你的防火墙已开放${dashboard_port}端口\033[0m"
 
@@ -304,12 +295,8 @@ uninstall() {
     sudo rm /etc/systemd/system/nbwebui-dashboard.service
 
     echo -e "\033[0;36m正在删除安装文件...\033[0m"
-    echo -e "\033[0;34m[+]sudo rm -rf /opt/nbwebui\033[0m"
-    sudo rm -rf /opt/nbwebui
-
-    echo -e "\033[0;36m正在删除用户...\033[0m"
-    echo -e "\033[0;34m[+]sudo userdel nbwebui\033[0m"
-    sudo userdel nbwebui
+    echo -e "\033[0;34m[+]rm -rf ${INSTALL_DIR}\033[0m"
+    rm -rf "${INSTALL_DIR}"
 
     echo -e "\033[0;36m正在重新加载Systemd守护进程...\033[0m"
     echo -e "\033[0;34m[+]sudo systemctl daemon-reload\033[0m"
@@ -364,13 +351,13 @@ change_dashboard_password(){
         echo -e "\033[0;31m密码不能为空！\033[0m"
         exit 1
     fi
-    sudo sed -i "s/\"password\": \".*\"/\"password\": \"${new_password}\"/" /opt/nbwebui/dashboard/config.json
+    sed -i "s/\"password\": \".*\"/\"password\": \"${new_password}\"/" "${INSTALL_DIR}/dashboard/config.json"
     echo -e "\033[0;32mDashboard密码已更新！\033[0m"
     echo -e "\033[0;33m正在重启Dashboard服务......\033[0m"
     echo -e "\033[0;34m[+]sudo systemctl restart nbwebui-dashboard\033[0m"
     sudo systemctl restart nbwebui-dashboard
-    echo -e "\033[0;34m[+]sudo rm -f /opt/nbwebui/dashboard/secret.key\033[0m"
-    sudo rm -f /opt/nbwebui/dashboard/secret.key
+    echo -e "\033[0;34m[+]rm -f ${INSTALL_DIR}/dashboard/secret.key\033[0m"
+    rm -f "${INSTALL_DIR}/dashboard/secret.key"
     echo -e "\033[0;32mDashboard已重启！\033[0m"
 }
 
@@ -381,8 +368,8 @@ change_agent_key(){
         echo -e "\033[0;31m密钥不能为空！\033[0m"
         exit 1
     fi
-    sudo sed -i "s/\"token\": \".*\"/\"token\": \"${new_key}\"/" /opt/nbwebui/agent/config.json
-    sudo sed -i "s/\"token\": \".*\"/\"token\": \"${new_key}\"/" /opt/nbwebui/dashboard/config.json
+    sed -i "s/\"token\": \".*\"/\"token\": \"${new_key}\"/" "${INSTALL_DIR}/agent/config.json"
+    sed -i "s/\"token\": \".*\"/\"token\": \"${new_key}\"/" "${INSTALL_DIR}/dashboard/config.json"
     echo -e "\033[0;32mAgent密钥已更新！\033[0m"
     echo -e "\033[0;33m正在重启服务......\033[0m"
     echo -e "\033[0;34m[+]sudo systemctl restart nbwebui-agent\033[0m"
@@ -437,24 +424,21 @@ update() {
     esac
 
     echo -e "\033[0;36m清理旧版本文件...\033[0m"
-    sudo rm -f /opt/nbwebui/agent/agent-linux-*
-    sudo rm -f /opt/nbwebui/dashboard/dashboard-linux-*
+    rm -f "${INSTALL_DIR}/agent/agent-linux-"*
+    rm -f "${INSTALL_DIR}/dashboard/dashboard-linux-"*
 
     echo -e "\033[0;36m开始下载最新版本的 NoneBot Agent...\033[0m"
-    sudo wget "${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}" -O /opt/nbwebui/agent/agent-linux-${ARCH}
-    sudo chmod +x /opt/nbwebui/agent/agent-linux-${ARCH}
+    wget "${BASE_URL}nonebot-agent/releases/latest/download/agent-linux-${ARCH}" -O "${INSTALL_DIR}/agent/agent-linux-${ARCH}"
+    chmod +x "${INSTALL_DIR}/agent/agent-linux-${ARCH}"
     
     echo -e "\033[0;36m开始下载最新版本的 NoneBot WebUI Dashboard Self Host...\033[0m"
-    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}" -O /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
-    sudo chmod +x /opt/nbwebui/dashboard/dashboard-linux-${ARCH}
+    wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-linux-${ARCH}" -O "${INSTALL_DIR}/dashboard/dashboard-linux-${ARCH}"
+    chmod +x "${INSTALL_DIR}/dashboard/dashboard-linux-${ARCH}"
 
     echo -e "\033[0;36m开始下载最新版本的Dashboard资源...\033[0m"
-    sudo wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip" -O /opt/nbwebui/dashboard/dashboard.zip
-    sudo unzip -o -qq /opt/nbwebui/dashboard/dashboard.zip -d /opt/nbwebui/dashboard/
-    sudo rm /opt/nbwebui/dashboard/dashboard.zip
-
-    echo -e "\033[0;36m重置文件权限...\033[0m"
-    sudo chown -R nbwebui:nbwebui /opt/nbwebui
+    wget "${BASE_URL}nonebot-flutter-webui-dashboard/releases/latest/download/dashboard-index-canvaskit.zip" -O "${INSTALL_DIR}/dashboard/dashboard.zip"
+    unzip -o -qq "${INSTALL_DIR}/dashboard/dashboard.zip" -d "${INSTALL_DIR}/dashboard/"
+    rm "${INSTALL_DIR}/dashboard/dashboard.zip"
 
     echo -e "\033[0;36m重启服务...\033[0m"
     sudo systemctl daemon-reload
